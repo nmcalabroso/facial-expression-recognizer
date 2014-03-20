@@ -43,7 +43,10 @@ def load_image(path):
 		for j in range(48):
 			pixel_list.append(pixels[i,j])
 	
+
 	"""
+	my_string = None #paste mo dito yung list: for intance: "100 20 30 40..." walang bracket ah
+	pixel_list = map(int,my_string.split())
 	#trying to check if the acquired pixel_list is the same as the original
 	new = Image.new(mode = "L", size = (48,48))
 	x = new.load()
