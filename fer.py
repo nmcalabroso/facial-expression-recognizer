@@ -11,4 +11,4 @@ class FER():
 		pass #returns the accuracy of the algorithm in floating point format
 
 	def predict(self,image):
-		pass #classify a single image
+		pass #classify a single image, returns the index of result (see main for the legend index:[0,7])
