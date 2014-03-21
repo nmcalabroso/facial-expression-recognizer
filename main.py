@@ -43,7 +43,6 @@ def load_image(path):
 		for j in range(48):
 			pixel_list.append(pixels[i,j])
 	
-
 	"""
 	my_string = None #paste mo dito yung list: for intance: "100 20 30 40..." walang bracket ah
 	pixel_list = map(int,my_string.split())
@@ -55,8 +54,7 @@ def load_image(path):
 		for j in range(48):
 			x[i,j] = pixel_list[k]
 			k+=1
-	new.save("new.png")
-	"""
+	new.save("new.png")"""
 
 	return pixel_list #returns a list of pixels with size 2304(or 48*48)
 
