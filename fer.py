@@ -1,5 +1,8 @@
+from __future__ import division
 from ann import ANN
+import time
 
+#Facial Expression Recognizer
 class FER():
 	def __init__(self):
 		#change 3rd param
@@ -12,10 +15,42 @@ class FER():
 		self.neural = ANN(48*48,7,2,1200,10,0.5)
 
 	def train(self,dataset):
-		pass #train; writes the weight on the file; returns true if sucesss, false otherwise; returns time consumed
+		start = time.clock()
+		weights = self.neural.train(dataset)
+		result = True
+		timex = 0
+		
+		weight_f = open("weights.txt","w")
+		for layer in weights:
+  			for e in layer:
+  				weight_f.write(str(e))
+  			weight_f.write("\n")
+  		weight_f.close()
+
+  		end = time.clock()
+  		timex = end - start
+  		#train; writes the weight on the file; returns true if sucesss, false otherwise; returns time consumed
+		return result,timex
 
 	def test(self,dataset):
-		pass #returns the accuracy of the algorithm in floating point format; returns true if sucess, false otherwise; returns time consumed
+		start = time.clock()
+		correct = 0
+		accuracy = 0.0
+		result = True
+		timex = 0
+
+		for row in dataset:
+			prediction = self.predict(row[1])
+			if prediction == row[0]:
+				correct+=1
+
+		accuracy = correct/len(dataset)
+
+		end = time.clock()
+  		timex = end - start
+		#returns the accuracy of the algorithm in floating point format; returns true if sucess, false otherwise; returns time consumed
+		return accuracy,result,timex
 
 	def predict(self,image):
-		pass #classify a single image, returns the index of result (see main for the legend index:[0,7])
+		#classify a single image, returns the index of result (see main for the legend index:[0,7])
+		return self.neural.classify(image)
