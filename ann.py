@@ -3,6 +3,10 @@ from random import random
 from copy import deepcopy
 from math import atan
 from math import exp
+from math import pi
+#from mpmath import mp
+#@from mpmath import exp
+
 import time
 
 #add bias for the last hidden layer
@@ -43,10 +47,11 @@ class ANN():
 
 	def train(self,data,epoch = 5):
 		#data = [(emotion, [pixels]), ...]
+		data = [data[0] for row in data]
 		for a in range(epoch):
 			print "Epoch:",a+1
 			for row in range(len(data)):
-				self.desired = [1 if i is data[row][0] else 0 for i in range(self.output_n)]
+				self.desired = [pi/2 if i is data[row][0] else -(pi/2) for i in range(self.output_n)]
 				self.input = data[row][1]
 
 				self.input.insert(0,1) #insert bias at index 0
@@ -64,6 +69,8 @@ class ANN():
 				print "len(weight["+str(0)+"]["+str(0)+"]):",len(self.weight[0][0])
 				"""
 				print "desired:",self.desired
+				#print "weight[0][0]",self.weight[0][0]
+				#print "hidden[0]:",self.hidden[0]
 				print "output:",self.output
 				print "error in output:",self.err_output
 
@@ -84,11 +91,11 @@ class ANN():
 				timex += end-start
 
 				print "One training data took",timex,"sec..."
-				raw_input("Continue to new training data...")
+				#raw_input("Continue to new training data...")
 
 	def feed_forward(self,layer):
-		g = lambda z: 1/(1 + exp(-z))
-
+		#g = lambda z: 1/(1 + exp(-z))
+		g = lambda x: atan(x)
 		#print "Current layer:",layer
 
 		if layer == 1: #input layer and 1st hidden layer
@@ -102,10 +109,10 @@ class ANN():
 			self.output = [g(sum(map((lambda e: e[0]*e[1]),zip([i[j] for i in self.weight[layer-1]],nodes_value)))) for j in range(self.sizes[layer])]
 
 	def back_propagation(self,layer):
-		g = lambda z: 1/(1 + exp(-z))
-		dg = lambda x: g(x)*(1-g(x))
+		#g = lambda z: 1/(1 + exp(-z))
+		#dg = lambda x: g(x)*(1-g(x))
 
-		#dg = lambda x: 1/(x**2+1)
+		dg = lambda x: 1/((x**2)+1)
 		y = self.desired
 		#5 4 3 2
 
