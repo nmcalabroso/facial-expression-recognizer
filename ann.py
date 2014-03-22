@@ -4,12 +4,7 @@ from copy import deepcopy
 from math import atan
 from math import fabs
 from math import pi
-#from mpmath import mp
-#@from mpmath import exp
-
 import time
-
-#add bias for the last hidden layer
 
 class ANN():
 
@@ -110,7 +105,8 @@ class ANN():
 			new_err = total_err
 			self.alpha = fabs(new_dif)/len(data)
 			self.eta = fabs(dif)/len(data)
-
+			#input to hidden nodes
+			
 	def feed_forward(self,layer):
 		#g = lambda z: 1/(1 + exp(-z))
 		g = lambda x: atan(x)
@@ -158,7 +154,6 @@ class ANN():
 	def update_weights(self,layer):
 		#update for layer 0-1 (input layer to 1st-2nd hidden layer)
 		#print "Current layer:",layer
-
 		if layer == self.hidden_n:
 			err_layer = self.err_output
 		else:
