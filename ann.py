@@ -3,6 +3,7 @@ from random import random
 from copy import deepcopy
 from math import atan
 from math import exp
+import time
 
 #add bias for the last hidden layer
 
@@ -47,8 +48,9 @@ class ANN():
 			self.input = data[row][1]
 
 			self.input.insert(0,1) #insert bias at index 0
+			timex = 0.0
 			for a in range(5):
-				print "List Lengths:"
+				"""print "List Lengths:"
 				print "len(input):",len(self.input)
 
 				print "len(hidden):",len(self.hidden)
@@ -62,26 +64,31 @@ class ANN():
 				print "Epoch:",a+1
 				print "desired:",self.desired
 				print "output:",self.output
-				print "error in output:",self.err_output
+				print "error in output:",self.err_output"""
 
-				print "Feeding forward..."
+				start = time.clock()
+				#print "Feeding forward..."
 				for i in range(self.hidden_n+1):
 					self.feed_forward(i+1)
 
-				print "Propagating backward..."
+				#print "Propagating backward..."
 				for i in range(self.hidden_n,-1,-1):
 					self.back_propagation(i)
 
-				print "Updating weights..."
+				#print "Updating weights..."
 				for i in range(self.hidden_n+1):
 					self.update_weights(i)
 
+				end = time.clock()
+				timex += end-start
+
+			print "One training data took",timex,"sec..."
 			raw_input("Continue to new training data...")
 
 	def feed_forward(self,layer):
 		g = lambda z: 1/(1 + exp(-z))
 
-		print "Current layer:",layer
+		#print "Current layer:",layer
 
 		if layer == 1: #input layer and 1st hidden layer
 			nodes_value = self.input
@@ -101,7 +108,7 @@ class ANN():
 		y = self.desired
 		#5 4 3 2
 
-		print "Current layer:",layer
+		#print "Current layer:",layer
 
 		if layer == self.hidden_n:
 			output = self.output
@@ -124,7 +131,7 @@ class ANN():
 
 	def update_weights(self,layer):
 		#update for layer 0-1 (input layer to 1st-2nd hidden layer)
-		print "Current layer:",layer
+		#print "Current layer:",layer
 
 		if layer == self.hidden_n:
 			err_layer = self.err_output

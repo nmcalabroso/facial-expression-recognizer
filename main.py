@@ -64,7 +64,7 @@ def main():
 		a = int(raw_input("You want to:"))
 
 		if a is 1:#to train
-			filename = raw_input("Enter the name (relative to resources folder) of the csv file:")
+			filename = "fer2013.csv"#raw_input("Enter the name (relative to resources folder) of the csv file:")
 			training_set,test_set = load_data_set(filename)
 			#format of each element in each list is (emotion,pixel_list)
 			train = recognizer.train(training_set) 
