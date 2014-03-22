@@ -53,7 +53,7 @@ class ANN():
 		for a in range(epoch):
 			total_err = 0.0
 			print "alpha:",self.alpha
-			print "eta:".self.eta
+			print "eta:",self.eta
 			print "Epoch:",a+1
 			for row in range(len(data)):
 				self.desired = [pi/2 if i is data[row][0] else -(pi/2) for i in range(self.output_n)]
