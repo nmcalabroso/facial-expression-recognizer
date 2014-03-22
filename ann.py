@@ -1,7 +1,7 @@
 from __future__ import division
 from random import random
 from copy import deepcopy
-
+from math import atan
 
 #add bias for the last hidden layer
 
@@ -27,6 +27,7 @@ class ANN():
 		self.alpha = alpha
 		self.eta = eta
 		self.input = []
+		self.desired = []
 		self.hidden_n = hidden_n
 		self.sizes = [input_n+1 if i is 0 else output_n if i is num_layers-1 else num_nodes if i is num_layers-2 else num_nodes+1 for i in range(num_layers)]
 		self.hidden = [[0 for a in range(num_nodes)] if i==hidden_n-1 else [0 for b in range(num_nodes+1)] for i in range(hidden_n)]
@@ -37,15 +38,31 @@ class ANN():
 		self.err_hidden = [[0 for a in range(num_nodes)] for i in range(hidden_n)]
 		self.err_output = []
 
-	def train(self,data):
+	def train(self,data,epoch = 5):
 		#data = [(emotion, [pixels]), ...]
 		for row in range(len(data)):
+			self.desired = [1 if i is data[row][0] else 0 for i in range(self.output_n)]
 			self.input = data[row][1]
-			self.input.insert(0,1) #insert bias at index 0
 
-			#put values in hidden and output layer
-			for i in range(self.hidden_n+1):
-				self.feed_forward(i+1)
+			print "len(input)",len(self.input)
+			print "output:",self.output
+			print "error in output:",self.err_output
+
+			self.input.insert(0,1) #insert bias at index 0
+			for a in range(5):
+				print "Epoch:",a+1
+
+				for i in range(self.hidden_n+1):
+					self.feed_forward(i+1)
+
+				for i in range(self.hidden_n,0,-1):
+					self.back_propagation(i)
+
+				for i in range(self.hidden_n+1):
+					self.update_weights(i)
+
+
+			raw_input("Continue to new training data...")
 
 	def feed_forward(self,layer):
 		g = lambda x: atan(x)
@@ -60,8 +77,9 @@ class ANN():
 		else:
 			self.output = [g(sum(map((lambda e: e[0]*e[1]),zip([i[j] for i in self.weight[layer-1]],nodes_value)))) for j in range(self.sizes[layer])]
 
-	def back_propagation(self,layer,y):
+	def back_propagation(self,layer):
 		dg = lambda x: 1/(x**2+1)
+		y = self.desired
 		#5 4 3 2
 		if layer == self.hidden_n:
 			output = self.output
@@ -95,4 +113,3 @@ class ANN():
 			from_layer = self.hidden[layer-1]
 
 		self.weight[layer] = [self.weight[layer][i][j] + self.alpha*self.prev_weight[layer][i][j] + self.eta*err_layer[j]*from_layer[i] for j in range(len(self.weight[layer][i])) for i in range(len(self.weight[layer]))]
-
