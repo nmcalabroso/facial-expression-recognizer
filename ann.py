@@ -80,15 +80,15 @@ class ANN():
 				print "error in output:",self.err_output
 
 				start = time.clock()
-				print "Feeding forward..."
+				#print "Feeding forward..."
 				for i in range(self.hidden_n+1):
 					self.feed_forward(i+1)
 
-				print "Propagating backward..."
+				#print "Propagating backward..."
 				for i in range(self.hidden_n,-1,-1):
 					self.back_propagation(i)
 
-				print "Updating weights..."
+				#print "Updating weights..."
 				for i in range(self.hidden_n+1):
 					self.update_weights(i)
 
@@ -105,7 +105,8 @@ class ANN():
 			new_err = total_err
 			self.alpha = fabs(new_dif)/len(data)
 			self.eta = fabs(dif)/len(data)
-			#input to hidden nodes
+
+		return self.weight
 			
 	def feed_forward(self,layer):
 		#g = lambda z: 1/(1 + exp(-z))

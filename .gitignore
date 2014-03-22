@@ -1,4 +1,6 @@
 *.pyc
 *.jpg
 *.png
+*.txt
+weights.txt
 resources/

@@ -22,10 +22,19 @@ class FER():
 		timex = 0
 		
 		weight_f = open("weights.txt","w")
-		for layer in weights:
-  			for e in layer:
-  				weight_f.write(str(e))
-  			weight_f.write("\n")
+		#weights = [weights[0]]
+		#print "len(weights)",len(weights)
+		#print "len(weights[0])",len(weights[0])
+		#print "weights[0][1]",weights[0][1]
+		
+		for layer in range(len(weights)):
+			weight_f.write("Layer "+str(layer)+"\n")
+  			for e in range(len(weights[layer])):
+  				weight_f.write("Node "+str(e)+"\n")
+  				for f in range(len(weights[layer][e])):
+  					weight_f.write(str(weights[layer][e][f]))
+  				weight_f.write("\n")
+  		
   		weight_f.close()
 
   		end = time.clock()

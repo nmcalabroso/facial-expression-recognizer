@@ -23,6 +23,7 @@ def load_data_set(filename):
 			header = row
 			print "header:",header
 		else:
+			#if i<1:
 			data = row #(emotion, pixel_list, usage)
 			point = (int(data[0]),map(int,data[1].split()))
 			if data[2] == "Training":
@@ -72,14 +73,15 @@ def main():
 				print "Training failed. Program will terminate."
 				break
 
-			test = recognizer.test(test_set)
+			#uncomment to test
+			"""test = recognizer.test(test_set)
 			if test[1]:
 				print "Testing complete!"
 				print "Accuracy:",test[0]
 				print "Time:",test[2]
 			else:
 				print "Testing failed!"
-				break
+				break"""
 			break
 		elif a is 2: #to test
 			for i in range(len(expressions)):
