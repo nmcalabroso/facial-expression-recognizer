@@ -61,9 +61,9 @@ class ANN():
 		if layer == self.hidden_n:
 			output = self.output
 			#change output[i] to summation of w
-			self.err_output = [dg(sum(map((lambda e: e[0]*e[1]),zip([k[i] for k in self.weight[layer]],self.hidden[layer]))))*(y[i]-output[i]) for i in range(len(output))]
+			self.err_output = [dg(sum(map((lambda e: e[0]*e[1]),zip([k[i] for k in self.weight[layer]],self.hidden[layer-1]))))*(y[i]-output[i]) for i in range(len(output))]
 		else:
-			hidden = self.hidden[layer+1]
+			hidden = self.hidden[layer]
 
 			if layer == 0:
 				x = self.input
@@ -75,7 +75,7 @@ class ANN():
 			else:
 				b4 = self.err_hidden[layer+1]
 
-			self.err_hidden[layer] = [dg(sum(map((lambda e: e[0]*e[1]),zip([k[j] for k in self.weight[layer]],x))))*sum([self.weight[layer][i][j]*b4[j] for j in range(len(self.weight[layer][i]))]) for i in range(len(hidden))]
+			self.err_hidden[layer] = [dg(sum(map((lambda e: e[0]*e[1]),zip([k[j] for k in self.weight[layer]],x))))*sum(map((lambda e: e[0]*e[1]),zip(self.weight[layer+1][i],b4))) for i in range(len(hidden))]
 
 	def update_weights(self):
 		for i in range(len(self.weights)):
