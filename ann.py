@@ -2,7 +2,7 @@ from __future__ import division
 from random import random
 from copy import deepcopy
 from math import atan
-from math import exp
+from math import fabs
 from math import pi
 #from mpmath import mp
 #@from mpmath import exp
@@ -47,8 +47,18 @@ class ANN():
 
 	def train(self,data,epoch = 5):
 		#data = [(emotion, [pixels]), ...]
-		data = [data[0] for row in data]
+		total_err = 0.0
+		new_err = 0.0
+		dif = 10
+		new_dif = 1
+
+		self.eta = fabs(dif)/len(data)
+		self.alpha = fabs(new_dif)/len(data)
+
 		for a in range(epoch):
+			total_err = 0.0
+			print "alpha:",self.alpha
+			print "eta:".self.eta
 			print "Epoch:",a+1
 			for row in range(len(data)):
 				self.desired = [pi/2 if i is data[row][0] else -(pi/2) for i in range(self.output_n)]
@@ -90,8 +100,16 @@ class ANN():
 				end = time.clock()
 				timex += end-start
 
+				total_err += sum(0.5*(self.desired[i]-self.output[i])**2 for i in range(self.output_n))
 				print "One training data took",timex,"sec..."
-				#raw_input("Continue to new training data...")
+				# mean squared error
+			#raw_input("Continue to new training data...")
+			print "Total error:",total_err
+			new_dif = dif
+			dif = new_err - total_err
+			new_err = total_err
+			self.alpha = fabs(new_dif)/len(data)
+			self.eta = fabs(dif)/len(data)
 
 	def feed_forward(self,layer):
 		#g = lambda z: 1/(1 + exp(-z))
