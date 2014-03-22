@@ -16,17 +16,22 @@ def load_data_set(filename):
 	training_set = []
 	test_set = []
 
+	temp = 10
+	i = 0
+
 	for row in reader:
 		if rownum is 0:
 			header = row
 			print "header:",header
 		else:
-			data = row #(emotion, pixel_list, usage)
-			point = (int(data[0]),map(int,data[1].split()))
-			if data[2] == "Training":
-				training_set.append(point)
-			else:
-				test_set.append(point)
+			if i < temp:
+				data = row #(emotion, pixel_list, usage)
+				point = (int(data[0]),map(int,data[1].split()))
+				if data[2] == "Training":
+					training_set.append(point)
+				else:
+					test_set.append(point)
+			i+=1
 		rownum += 1
 
 	my_file.close()

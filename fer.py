@@ -15,6 +15,7 @@ class FER():
 		self.neural = ANN(48*48,7,2,1200,10,0.5)
 
 	def train(self,dataset):
+		print "FER Train"
 		start = time.clock()
 		weights = self.neural.train(dataset)
 		result = True
