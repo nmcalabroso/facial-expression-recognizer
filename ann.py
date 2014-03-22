@@ -37,8 +37,8 @@ class ANN():
 
 		self.input = []
 		self.desired = []
-		self.sizes = [input_n+1 if i is 0 else output_n if i is num_layers-1 else num_nodes if i is num_layers-2 else num_nodes+1 for i in range(num_layers)]
-		self.hidden = [[0 for a in range(num_nodes)] if i==hidden_n-1 else [0 for b in range(num_nodes+1)] for i in range(hidden_n)]
+		self.sizes = [input_n+1 if i is 0 else output_n if i is num_layers-1 else num_nodes+1 for i in range(num_layers)]
+		self.hidden = [[0 for b in range(num_nodes+1)] for i in range(hidden_n)]
 		self.weight = [[[rand(random()) for k in range(self.sizes[i+1])] for j in range(self.sizes[i])] for i in range(num_layers-1)]
 		self.prev_weight = deepcopy(self.weight)
 		self.output = [0 for i in range(output_n)]
