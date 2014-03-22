@@ -2,6 +2,7 @@ from __future__ import division
 from random import random
 from copy import deepcopy
 from math import atan
+from math import exp
 
 #add bias for the last hidden layer
 
@@ -59,6 +60,7 @@ class ANN():
 				print "len(weight["+str(0)+"]["+str(0)+"]):",len(self.weight[0][0])
 
 				print "Epoch:",a+1
+				print "desired:",self.desired
 				print "output:",self.output
 				print "error in output:",self.err_output
 
@@ -77,7 +79,7 @@ class ANN():
 			raw_input("Continue to new training data...")
 
 	def feed_forward(self,layer):
-		g = lambda x: atan(x)
+		g = lambda z: 1/(1 + exp(-z))
 
 		print "Current layer:",layer
 
@@ -92,7 +94,10 @@ class ANN():
 			self.output = [g(sum(map((lambda e: e[0]*e[1]),zip([i[j] for i in self.weight[layer-1]],nodes_value)))) for j in range(self.sizes[layer])]
 
 	def back_propagation(self,layer):
-		dg = lambda x: 1/(x**2+1)
+		g = lambda z: 1/(1 + exp(-z))
+		dg = lambda x: g(x)*(1-g(x))
+
+		#dg = lambda x: 1/(x**2+1)
 		y = self.desired
 		#5 4 3 2
 
