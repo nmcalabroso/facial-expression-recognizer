@@ -1,5 +1,6 @@
 from random import random
 from operator import mul
+from math import atan
 import numpy as np
 
 class ANN():
@@ -29,14 +30,20 @@ class ANN():
 			self.input = data[row][1]
 			self.input.insert(0,1) #insert bias at index 0
 
-			#input to hidden nodes
-			self.hidden[row] = 
+			#put values in hidden and output layer
+			for i in range(self.hidden_n+1):
+				self.feed_forward(i+1)
 
 	def feed_forward(self,layer):
+		g = lambda x: atan(x)
+
 		if layer == 1: #input layer and 1st hidden layer
 			nodes_value = self.input
 		else:
 			nodes_value = self.hidden[layer-2]
 
-		self.hidden[layer] = [sum(map((lambda e: e[0]*e[1]),zip([i[j] for i in self.weight[layer-1]],nodes_value))) for j in range(self.sizes[layer])]
+		if layer != self.hidden_n+1:
+			self.hidden[layer-1] = [g(sum(map((lambda e: e[0]*e[1]),zip([i[j] for i in self.weight[layer-1]],nodes_value)))) for j in range(self.sizes[layer])]
+		else:
+			self.output = [g(sum(map((lambda e: e[0]*e[1]),zip([i[j] for i in self.weight[layer-1]],nodes_value)))) for j in range(self.sizes[layer])]
 
