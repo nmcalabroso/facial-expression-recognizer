@@ -1,5 +1,9 @@
 from __future__ import division
 from random import random
+from copy import deepcopy
+
+
+#add bias for the last hidden layer
 
 class ANN():
 
@@ -27,6 +31,7 @@ class ANN():
 		self.sizes = [input_n+1 if i is 0 else output_n if i is num_layers-1 else num_nodes if i is num_layers-2 else num_nodes+1 for i in range(num_layers)]
 		self.hidden = [[0 for a in range(num_nodes)] if i==hidden_n-1 else [0 for b in range(num_nodes+1)] for i in range(hidden_n)]
 		self.weight = [[[rand(random()) for k in range(self.sizes[i+1])] for j in range(self.sizes[i])] for i in range(num_layers-1)]
+		self.prev_weight = deepcopy(self.weight)
 		self.output = [0 for i in range(output_n)]
 		
 		self.err_hidden = [[0 for a in range(num_nodes)] for i in range(hidden_n)]
@@ -75,14 +80,19 @@ class ANN():
 			else:
 				b4 = self.err_hidden[layer+1]
 
-			self.err_hidden[layer] = [dg(sum(map((lambda e: e[0]*e[1]),zip([k[j] for k in self.weight[layer]],x))))*sum(map((lambda e: e[0]*e[1]),zip(self.weight[layer+1][i],b4))) for i in range(len(hidden))]
+			self.err_hidden[layer] = [dg(sum(map((lambda e: e[0]*e[1]),zip([k[i] for k in self.weight[layer]],x))))*sum(map((lambda e: e[0]*e[1]),zip(self.weight[layer+1][i],b4))) for i in range(len(hidden))]
 
-	def update_weights(self):
-		for i in range(len(self.weights)):
-			for j in range(len(self.weights[i])):
-				for k in range(len(self.weights[i][j])):
-					self.weights
-					if i == 0:
-						pass
-					elif i == 2:
-						pass
+	def update_weights(self,layer):
+		#update for layer 0-1 (input layer to 1st-2nd hidden layer)
+		if layer == self.hidden_n:
+			err_layer = self.err_output
+		else:
+			err_layer = self.err_hidden[layer]
+
+		if layer == 0:
+			from_layer = self.input
+		else:
+			from_layer = self.hidden[layer-1]
+
+		self.weight[layer] = [self.weight[layer][i][j] + self.alpha*self.prev_weight[layer][i][j] + self.eta*err_layer[j]*from_layer[i] for j in range(len(self.weight[layer][i])) for i in range(len(self.weight[layer]))]
+
