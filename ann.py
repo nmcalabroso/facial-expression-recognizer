@@ -43,13 +43,15 @@ class ANN():
 
 	def train(self,data,epoch = 5):
 		#data = [(emotion, [pixels]), ...]
-		for row in range(len(data)):
-			self.desired = [1 if i is data[row][0] else 0 for i in range(self.output_n)]
-			self.input = data[row][1]
+		for a in range(epoch):
+			print "Epoch:",a+1
+			for row in range(len(data)):
+				self.desired = [1 if i is data[row][0] else 0 for i in range(self.output_n)]
+				self.input = data[row][1]
 
-			self.input.insert(0,1) #insert bias at index 0
-			timex = 0.0
-			for a in range(5):
+				self.input.insert(0,1) #insert bias at index 0
+				timex = 0.0
+				
 				"""print "List Lengths:"
 				print "len(input):",len(self.input)
 
@@ -61,8 +63,6 @@ class ANN():
 				print "len(weight["+str(0)+"]):",len(self.weight[0])
 				print "len(weight["+str(0)+"]["+str(0)+"]):",len(self.weight[0][0])
 				"""
-				
-				print "Epoch:",a+1
 				print "desired:",self.desired
 				print "output:",self.output
 				print "error in output:",self.err_output
@@ -83,8 +83,8 @@ class ANN():
 				end = time.clock()
 				timex += end-start
 
-			print "One training data took",timex,"sec..."
-			raw_input("Continue to new training data...")
+				print "One training data took",timex,"sec..."
+				raw_input("Continue to new training data...")
 
 	def feed_forward(self,layer):
 		g = lambda z: 1/(1 + exp(-z))
