@@ -26,15 +26,16 @@ class ANN():
 		rand = lambda x: 0.01 if x is 0 else x
 		self.alpha = alpha
 		self.eta = eta
+		self.hidden_n = hidden_n
+		self.output_n = output_n
+
 		self.input = []
 		self.desired = []
-		self.hidden_n = hidden_n
 		self.sizes = [input_n+1 if i is 0 else output_n if i is num_layers-1 else num_nodes if i is num_layers-2 else num_nodes+1 for i in range(num_layers)]
 		self.hidden = [[0 for a in range(num_nodes)] if i==hidden_n-1 else [0 for b in range(num_nodes+1)] for i in range(hidden_n)]
 		self.weight = [[[rand(random()) for k in range(self.sizes[i+1])] for j in range(self.sizes[i])] for i in range(num_layers-1)]
 		self.prev_weight = deepcopy(self.weight)
 		self.output = [0 for i in range(output_n)]
-		
 		self.err_hidden = [[0 for a in range(num_nodes)] for i in range(hidden_n)]
 		self.err_output = []
 
@@ -44,28 +45,41 @@ class ANN():
 			self.desired = [1 if i is data[row][0] else 0 for i in range(self.output_n)]
 			self.input = data[row][1]
 
-			print "len(input)",len(self.input)
-			print "output:",self.output
-			print "error in output:",self.err_output
-
 			self.input.insert(0,1) #insert bias at index 0
 			for a in range(5):
-				print "Epoch:",a+1
+				print "List Lengths:"
+				print "len(input):",len(self.input)
 
+				print "len(hidden):",len(self.hidden)
+				for i in range(len(self.hidden)):
+					print "len(hidden["+str(i)+"]):",len(self.hidden[i])
+
+				print "len(weights):",len(self.weight)
+				print "len(weight["+str(0)+"]):",len(self.weight[0])
+				print "len(weight["+str(0)+"]["+str(0)+"]):",len(self.weight[0][0])
+
+				print "Epoch:",a+1
+				print "output:",self.output
+				print "error in output:",self.err_output
+
+				print "Feeding forward..."
 				for i in range(self.hidden_n+1):
 					self.feed_forward(i+1)
 
-				for i in range(self.hidden_n,0,-1):
+				print "Propagating backward..."
+				for i in range(self.hidden_n,-1,-1):
 					self.back_propagation(i)
 
+				print "Updating weights..."
 				for i in range(self.hidden_n+1):
 					self.update_weights(i)
-
 
 			raw_input("Continue to new training data...")
 
 	def feed_forward(self,layer):
 		g = lambda x: atan(x)
+
+		print "Current layer:",layer
 
 		if layer == 1: #input layer and 1st hidden layer
 			nodes_value = self.input
@@ -73,7 +87,7 @@ class ANN():
 			nodes_value = self.hidden[layer-2]
 
 		if layer != self.hidden_n+1:
-			self.hidden[layer-1] = [g(sum(map((lambda e: e[0]*e[1]),zip([i[j] for i in self.weight[layer-1]],nodes_value)))) for j in range(self.sizes[layer])]
+			self.hidden[layer-1] = [g(sum(map((lambda e: e[0]*e[1]),zip([i[j] for i in self.weight[layer-1]],nodes_value))))for j in range(self.sizes[layer])]
 		else:
 			self.output = [g(sum(map((lambda e: e[0]*e[1]),zip([i[j] for i in self.weight[layer-1]],nodes_value)))) for j in range(self.sizes[layer])]
 
@@ -81,6 +95,9 @@ class ANN():
 		dg = lambda x: 1/(x**2+1)
 		y = self.desired
 		#5 4 3 2
+
+		print "Current layer:",layer
+
 		if layer == self.hidden_n:
 			output = self.output
 			#change output[i] to summation of w
@@ -102,6 +119,8 @@ class ANN():
 
 	def update_weights(self,layer):
 		#update for layer 0-1 (input layer to 1st-2nd hidden layer)
+		print "Current layer:",layer
+
 		if layer == self.hidden_n:
 			err_layer = self.err_output
 		else:
@@ -112,4 +131,4 @@ class ANN():
 		else:
 			from_layer = self.hidden[layer-1]
 
-		self.weight[layer] = [self.weight[layer][i][j] + self.alpha*self.prev_weight[layer][i][j] + self.eta*err_layer[j]*from_layer[i] for j in range(len(self.weight[layer][i])) for i in range(len(self.weight[layer]))]
+		self.weight[layer] = [[self.weight[layer][i][j] + self.alpha*self.prev_weight[layer][i][j] + self.eta*err_layer[j]*from_layer[i] for j in range(len(self.weight[layer][i]))] for i in range(len(self.weight[layer]))]
