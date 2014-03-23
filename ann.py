@@ -25,8 +25,8 @@ class ANN():
 	def __init__(self,input_n,output_n,hidden_n,num_nodes,alpha,eta):
 		num_layers = hidden_n+2
 		rand = lambda x: 0.01 if x is 0 else x
-		self.alpha = alpha
-		self.eta = eta
+		self.alpha = alpha #learning rate
+		self.eta = eta #momentum
 		self.hidden_n = hidden_n
 		self.output_n = output_n
 
@@ -40,15 +40,15 @@ class ANN():
 		self.err_hidden = [[0 for a in range(num_nodes)] for i in range(hidden_n)]
 		self.err_output = []
 
-	def train(self,data,epoch = 5):
+	def train(self,data,epoch = 75):
 		#data = [(emotion, [pixels]), ...]
 		total_err = 0.0
 		new_err = 0.0
 		dif = 10
 		new_dif = 1
 
-		self.eta = fabs(dif)/len(data)
-		self.alpha = fabs(new_dif)/len(data)
+		self.alpha = fabs(dif)/len(data)
+		self.eta = fabs(new_dif)/len(data)
 
 		for a in range(epoch):
 			total_err = 0.0
@@ -96,6 +96,7 @@ class ANN():
 				timex += end-start
 
 				total_err += sum(0.5*(self.desired[i]-self.output[i])**2 for i in range(self.output_n))
+				print "Current error for this epoch:",total_err
 				print "One training data took",timex,"sec..."
 				# mean squared error
 			#raw_input("Continue to new training data...")
@@ -103,8 +104,8 @@ class ANN():
 			new_dif = dif
 			dif = new_err - total_err
 			new_err = total_err
-			self.alpha = fabs(new_dif)/len(data)
-			self.eta = fabs(dif)/len(data)
+			self.alpha = fabs(dif)/len(data)
+			self.eta = fabs(new_dif)/len(data)
 
 		return self.weight
 			

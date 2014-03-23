@@ -22,7 +22,7 @@ class FER():
 		timex = 0
 		
 		weight_f = open("weights.txt","w")
-		#weights = [weights[0]]
+		weights = [weights[0]]
 		#print "len(weights)",len(weights)
 		#print "len(weights[0])",len(weights[0])
 		#print "weights[0][1]",weights[0][1]
