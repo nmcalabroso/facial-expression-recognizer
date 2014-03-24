@@ -6,6 +6,7 @@ from math import fabs
 from math import pi
 import time
 import numpy as np
+import sys
 
 class ANN():
 
@@ -134,10 +135,14 @@ class ANN():
 			nodes_value = self.hidden[layer-2]
 
 		#test
-		transposed_weight = self.transposed_weight[layer-1] #np.array([[i[j] for i in self.weight[layer-1]] for j in range(self.sizes[layer])])
+		
 		if layer != self.hidden_n+1:
-			self.hidden[layer-1] = g(np.dot(transposed_weight,nodes_value))
+			#exclude bias in hidden layer
+			transposed_weight = self.transposed_weight[layer-1][1:] #np.array([[i[j] for i in self.weight[layer-1]] for j in range(self.sizes[layer])])
+		
+			self.hidden[layer-1] = np.concatenate(([1],g(np.dot(transposed_weight,nodes_value))))
 		else:
+			transposed_weight = self.transposed_weight[layer-1]
 			self.output = g(np.dot(transposed_weight,nodes_value))
 
 
