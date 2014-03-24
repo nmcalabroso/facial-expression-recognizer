@@ -5,6 +5,7 @@ from math import atan
 from math import fabs
 from math import pi
 import time
+import numpy as np
 
 class ANN():
 
@@ -33,15 +34,25 @@ class ANN():
 		self.input = []
 		self.desired = []
 		self.sizes = [input_n+1 if i is 0 else output_n if i is num_layers-1 else num_nodes+1 for i in range(num_layers)]
-		self.hidden = [[0 for b in range(num_nodes+1)] for i in range(hidden_n)]
+		self.hidden = [np.array([1 for b in range(num_nodes+1)]) for i in range(hidden_n)]
 		self.weight = [[[rand(random()) for k in range(self.sizes[i+1])] for j in range(self.sizes[i])] for i in range(num_layers-1)]
+		self.weight = [np.array(i) for i in self.weight] #make array
+		self.transposed_weight = []
 		self.prev_weight = deepcopy(self.weight)
-		self.output = [0 for i in range(output_n)]
-		self.err_hidden = [[0 for a in range(num_nodes)] for i in range(hidden_n)]
+		self.prev_transposed_weight = []
+		self.output = np.array([0 for i in range(output_n)])
+		self.err_hidden = [np.array([0 for a in range(num_nodes)]) for i in range(hidden_n)]
 		self.err_output = []
 
-	def train(self,data,epoch = 75):
+	def transpose_weight(self):
+		self.transposed_weight = [np.transpose(i) for i in self.weight]
+
+		self.prev_transposed_weight = [np.transpose(i) for i in self.prev_weight]
+
+	def train(self,data,epoch = 1):
 		#data = [(emotion, [pixels]), ...]
+		self.transpose_weight()	#initialize transpose weight
+
 		total_err = 0.0
 		new_err = 0.0
 		dif = 10
@@ -55,11 +66,11 @@ class ANN():
 			print "alpha:",self.alpha
 			print "eta:",self.eta
 			print "Epoch:",a+1
-			for row in range(len(data)):
-				self.desired = [pi/2 if i is data[row][0] else -(pi/2) for i in range(self.output_n)]
+			for row in range(len(data)):#temporary set to 2
+				self.desired = np.array([pi/2 if i is data[row][0] else -(pi/2) for i in range(self.output_n)])
 				self.input = data[row][1]
-
 				self.input.insert(0,1) #insert bias at index 0
+				self.input = np.array(self.input)	#make array
 				timex = 0.0
 				
 				"""print "List Lengths:"
@@ -73,6 +84,7 @@ class ANN():
 				print "len(weight["+str(0)+"]):",len(self.weight[0])
 				print "len(weight["+str(0)+"]["+str(0)+"]):",len(self.weight[0][0])
 				"""
+				print "\ndata",row, "epoch",a+1
 				print "desired:",self.desired
 				#print "weight[0][0]",self.weight[0][0]
 				#print "hidden[0]:",self.hidden[0]
@@ -80,38 +92,40 @@ class ANN():
 				print "error in output:",self.err_output
 
 				start = time.clock()
-				#print "Feeding forward..."
+				print "Feeding forward..."
 				for i in range(self.hidden_n+1):
 					self.feed_forward(i+1)
-
-				#print "Propagating backward..."
+				
+				print "Propagating backward..."
 				for i in range(self.hidden_n,-1,-1):
 					self.back_propagation(i)
 
-				#print "Updating weights..."
+				
+				print "Updating weights..."
 				for i in range(self.hidden_n+1):
 					self.update_weights(i)
 
 				end = time.clock()
 				timex += end-start
 
-				total_err += sum(0.5*(self.desired[i]-self.output[i])**2 for i in range(self.output_n))
-				print "Current error for this epoch:",total_err
+				err = (np.sum((self.desired - self.output)**2))/np.size(self.output)#sum(0.5*(self.desired[i]-self.output[i])**2 for i in range(self.output_n))
+				total_err += err
+				print "Current error for this epoch:",err
 				print "One training data took",timex,"sec..."
 				# mean squared error
 			#raw_input("Continue to new training data...")
-			print "Total error:",total_err
+			print "\nTotal error:",total_err
 			new_dif = dif
 			dif = new_err - total_err
 			new_err = total_err
 			self.alpha = fabs(dif)/len(data)
 			self.eta = fabs(new_dif)/len(data)
 
-		return self.weight
+		return [i.tolist() for i in self.weight]
 			
 	def feed_forward(self,layer):
 		#g = lambda z: 1/(1 + exp(-z))
-		g = lambda x: atan(x)
+		g = lambda x: np.arctan(x)
 		#print "Current layer:",layer
 
 		if layer == 1: #input layer and 1st hidden layer
@@ -119,10 +133,22 @@ class ANN():
 		else:
 			nodes_value = self.hidden[layer-2]
 
+		#test
+		transposed_weight = self.transposed_weight[layer-1] #np.array([[i[j] for i in self.weight[layer-1]] for j in range(self.sizes[layer])])
 		if layer != self.hidden_n+1:
-			self.hidden[layer-1] = [g(sum(map((lambda e: e[0]*e[1]),zip([i[j] for i in self.weight[layer-1]],nodes_value))))for j in range(self.sizes[layer])]
+			self.hidden[layer-1] = g(np.dot(transposed_weight,nodes_value))
 		else:
-			self.output = [g(sum(map((lambda e: e[0]*e[1]),zip([i[j] for i in self.weight[layer-1]],nodes_value)))) for j in range(self.sizes[layer])]
+			self.output = g(np.dot(transposed_weight,nodes_value))
+
+
+
+
+
+
+		# if layer != self.hidden_n+1:
+		#	self.hidden[layer-1] = [g(sum(map((lambda e: e[0]*e[1]),zip([i[j] for i in self.weight[layer-1]],nodes_value))))for j in range(self.sizes[layer])]
+		# else:
+		# 	self.output = [g(sum(map((lambda e: e[0]*e[1]),zip([i[j] for i in self.weight[layer-1]],nodes_value)))) for j in range(self.sizes[layer])]
 
 	def back_propagation(self,layer):
 		#g = lambda z: 1/(1 + exp(-z))
@@ -137,7 +163,17 @@ class ANN():
 		if layer == self.hidden_n:
 			output = self.output
 			#change output[i] to summation of w
-			self.err_output = [dg(sum(map((lambda e: e[0]*e[1]),zip([k[i] for k in self.weight[layer]],self.hidden[layer-1]))))*(y[i]-output[i]) for i in range(len(output))]
+
+			#test
+			mult = y-output
+			transposed_weight = self.transposed_weight[layer]#np.array([[k[i] for k in self.weight[layer]]for i in range(len(output))])
+			phi = np.dot(transposed_weight,self.hidden[layer-1])
+			self.err_output = dg(phi) * (mult)
+		
+
+
+
+			#self.err_output = [dg(sum(map((lambda e: e[0]*e[1]),zip([k[i] for k in self.weight[layer]],self.hidden[layer-1]))))*(y[i]-output[i]) for i in range(len(output))]
 		else:
 			hidden = self.hidden[layer]
 
@@ -151,7 +187,12 @@ class ANN():
 			else:
 				b4 = self.err_hidden[layer+1]
 
-			self.err_hidden[layer] = [dg(sum(map((lambda e: e[0]*e[1]),zip([k[i] for k in self.weight[layer]],x))))*sum(map((lambda e: e[0]*e[1]),zip(self.weight[layer+1][i],b4))) for i in range(len(hidden))]
+			#test
+			transposed_weight = self.transposed_weight[layer] #np.array([[k[i] for k in self.weight[layer]]for i in range(len(hidden))])
+			self.err_hidden[layer] = dg(np.dot(transposed_weight,x))*np.dot(self.weight[layer+1],b4)
+
+
+			#self.err_hidden[layer] = [dg(sum(map((lambda e: e[0]*e[1]),zip([k[i] for k in self.weight[layer]],x))))*sum(map((lambda e: e[0]*e[1]),zip(self.weight[layer+1][i],b4))) for i in range(len(hidden))]
 
 	def update_weights(self,layer):
 		#update for layer 0-1 (input layer to 1st-2nd hidden layer)
@@ -166,4 +207,21 @@ class ANN():
 		else:
 			from_layer = self.hidden[layer-1]
 
-		self.weight[layer] = [[self.weight[layer][i][j] + self.alpha*self.prev_weight[layer][i][j] + self.eta*err_layer[j]*from_layer[i] for j in range(len(self.weight[layer][i]))] for i in range(len(self.weight[layer]))]
+		#test
+		col_vector = np.array(np.matrix(err_layer).T)
+		a1 = col_vector*from_layer
+		b1 = self.transposed_weight[layer]
+		current_weight = b1 + self.alpha*self.prev_transposed_weight[layer] + self.eta*a1
+
+		self.prev_weight[layer] = self.weight[layer]
+		self.weight[layer] = np.transpose(current_weight)
+
+		self.transpose_weight()
+
+
+
+		#self.weight[layer] = [[self.weight[layer][i][j] + self.alpha*self.prev_weight[layer][i][j] + self.eta*err_layer[j]*from_layer[i] for j in range(len(self.weight[layer][i]))] for i in range(len(self.weight[layer]))]
+
+	def classify(self,image):
+		pass
+

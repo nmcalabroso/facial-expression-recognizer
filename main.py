@@ -23,19 +23,33 @@ def load_data_set(filename):
 			header = row
 			print "header:",header
 		else:
-			if i<10000:
-				data = row #(emotion, pixel_list, usage)
-				point = (int(data[0]),map(int,data[1].split()))
-				if data[2] == "Training":
-					print "Loading training data:",i
-					training_set.append(point)
-				else:
-					test_set.append(point)
+			data = row #(emotion, pixel_list, usage)
+			point = (int(data[0]),map(int,data[1].split()))
+			if data[2] == "Training":
+				#print "Loading training data:",i
+				training_set.append(point)
+			else:
+				test_set.append(point)
 			i+=1
 		rownum += 1
 
 	my_file.close()
 	return training_set,test_set #returns a list or format of the training set from the csv file
+
+def load_weights():
+	my_file = open('weights.txt','r')
+	weight = []
+	layer = []
+	for line in my_file:
+		strip = line.split()
+		if strip[0] != 'Layer' and strip[0] != 'Node':
+			layer.append(strip)
+		elif strip[0] == 'Layer' and strip[1] != '0':
+			weight.append(layer)
+			layer = []
+	weight.append(layer) #for the last layer
+	my_file.close()
+	return weight
 
 def load_image(path):
 	img = Image.open(path)
@@ -74,14 +88,16 @@ def main():
 				break
 
 			#uncomment to test
-			"""test = recognizer.test(test_set)
-			if test[1]:
-				print "Testing complete!"
-				print "Accuracy:",test[0]
-				print "Time:",test[2]
-			else:
-				print "Testing failed!"
-				break"""
+			weight = load_weights()
+			print len(weight)
+			# test = recognizer.test(test_set)
+			# if test[1]:
+			# 	print "Testing complete!"
+			# 	print "Accuracy:",test[0]
+			# 	print "Time:",test[2]
+			# else:
+			# 	print "Testing failed!"
+			# 	break
 			break
 		elif a is 2: #to test
 			for i in range(len(expressions)):

@@ -22,7 +22,6 @@ class FER():
 		timex = 0
 		
 		weight_f = open("weights.txt","w")
-		weights = [weights[0]]
 		#print "len(weights)",len(weights)
 		#print "len(weights[0])",len(weights[0])
 		#print "weights[0][1]",weights[0][1]
@@ -32,7 +31,7 @@ class FER():
   			for e in range(len(weights[layer])):
   				weight_f.write("Node "+str(e)+"\n")
   				for f in range(len(weights[layer][e])):
-  					weight_f.write(str(weights[layer][e][f]))
+  					weight_f.write(str(weights[layer][e][f]) + " ")
   				weight_f.write("\n")
   		
   		weight_f.close()
@@ -49,7 +48,7 @@ class FER():
 		result = True
 		timex = 0
 
-		for row in dataset:
+		for row in dataset[:10]:#temporary set to 10
 			prediction = self.predict(row[1])
 			if prediction == row[0]:
 				correct+=1
