@@ -12,7 +12,7 @@ class FER():
 		at the end of the learning. Usually you should look at the training error to set up your learning schedule: 
 		if it got stuck, i.e. the error does not change, it is time to decrease your learning rate.
 		"""
-		self.neural = ANN(48*48,7,2,1200,10,0.5)
+		self.neural = ANN(48*48,7,1,1540,10,0.5)
 
 	def train(self,dataset):
 		print "FER Train"
