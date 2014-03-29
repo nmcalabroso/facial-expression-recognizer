@@ -23,14 +23,13 @@ def load_data_set(filename):
 			header = row
 			print "header:",header
 		else:
-			if i<10:
-				data = row #(emotion, pixel_list, usage)
-				point = (int(data[0]),map(int,data[1].split()))
-				if data[2] == "Training":
-					#print "Loading training data:",i
-					training_set.append(point)
-				else:
-					test_set.append(point)
+			data = row #(emotion, pixel_list, usage)
+			point = (int(data[0]),map(int,data[1].split()))
+			if data[2] == "Training":
+				#print "Loading training data:",i
+				training_set.append(point)
+			else:
+				test_set.append(point)
 			i+=1
 		rownum += 1
 
