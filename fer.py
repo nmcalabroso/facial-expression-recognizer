@@ -17,7 +17,7 @@ class FER():
 	def train(self,dataset):
 		print "FER Train"
 		start = time.clock()
-		weights = self.neural.train(dataset)
+		weights = self.neural.train(dataset,epoch=3)
 		result = True
 		timex = 0
 		
@@ -41,17 +41,24 @@ class FER():
   		#train; writes the weight on the file; returns true if sucesss, false otherwise; returns time consumed
 		return result,timex
 
-	def test(self,dataset):
+	def test(self,dataset,weights):
 		start = time.clock()
 		correct = 0
 		accuracy = 0.0
 		result = True
 		timex = 0
-
-		for row in dataset[:10]:#temporary set to 10
-			prediction = self.predict(row[1])
+		count = 1
+		for row in dataset:#temporary set to 10
+			start = time.clock()
+			print 'test_data',count
+			prediction = self.predict(row[1],weights,flag=count)
 			if prediction == row[0]:
 				correct+=1
+			
+			count += 1
+			end = time.clock()
+  			timex = end - start
+  			print 'test time',timex
 
 		accuracy = correct/len(dataset)
 
@@ -60,6 +67,13 @@ class FER():
 		#returns the accuracy of the algorithm in floating point format; returns true if sucess, false otherwise; returns time consumed
 		return accuracy,result,timex
 
-	def predict(self,image):
+	def predict(self,image,weights,flag=-1):
 		#classify a single image, returns the index of result (see main for the legend index:[0,7])
-		return self.neural.classify(image)
+		if flag == 1:
+			self.neural.set_weight(weights)
+		elif flag == -1:
+			self.neural.set_weight(weights)
+		output = list(self.neural.classify(image))
+		predicted_output = output.index(max(output))
+		print "output:",output
+		return predicted_output

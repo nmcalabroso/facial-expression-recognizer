@@ -45,6 +45,9 @@ class ANN():
 		self.err_hidden = [np.array([0 for a in range(num_nodes)]) for i in range(hidden_n)]
 		self.err_output = []
 
+	def set_weight(self,weightx):
+		self.weight = [np.array(i) for i in weightx]
+
 	def transpose_weight(self):
 		self.transposed_weight = [np.transpose(i) for i in self.weight]
 
@@ -139,8 +142,9 @@ class ANN():
 		if layer != self.hidden_n+1:
 			#exclude bias in hidden layer
 			transposed_weight = self.transposed_weight[layer-1][1:] #np.array([[i[j] for i in self.weight[layer-1]] for j in range(self.sizes[layer])])
-		
-			self.hidden[layer-1] = np.concatenate(([1],g(np.dot(transposed_weight,nodes_value))))
+			dinot = np.dot(transposed_weight,nodes_value)
+			sample = g(dinot)
+			self.hidden[layer-1] = np.concatenate(([1],sample))
 		else:
 			transposed_weight = self.transposed_weight[layer-1]
 			self.output = g(np.dot(transposed_weight,nodes_value))
@@ -228,5 +232,14 @@ class ANN():
 		#self.weight[layer] = [[self.weight[layer][i][j] + self.alpha*self.prev_weight[layer][i][j] + self.eta*err_layer[j]*from_layer[i] for j in range(len(self.weight[layer][i]))] for i in range(len(self.weight[layer]))]
 
 	def classify(self,image):
-		pass
+		self.transpose_weight()
+		self.input = image
+		self.input.insert(0,1) #insert bias at index 0
+		self.input = np.array(self.input)
+		#self.input.insert(0,1)#insert bias here in input
+		#self.hidden.insert(0,1)#insert bias here in hiddens
+		print "Feeding forward..."
+		for i in range(self.hidden_n+1):
+			self.feed_forward(i+1)
+		return self.output
 
