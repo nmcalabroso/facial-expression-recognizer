@@ -73,7 +73,8 @@ class ANN():
 			for row in range(len(data)):#temporary set to 2
 				self.desired = np.array([pi/2 if i is data[row][0] else -(pi/2) for i in range(self.output_n)])
 				self.input = data[row][1]
-				self.input.insert(0,1) #insert bias at index 0
+				if a == 0:
+					self.input.insert(0,1) #insert bias at index 0
 				self.input = np.array(self.input)	#make array
 				timex = 0.0
 				
@@ -118,6 +119,7 @@ class ANN():
 				print "One training data took",timex,"sec..."
 				# mean squared error
 			#raw_input("Continue to new training data...")
+		
 			print "\nTotal error:",total_err
 			new_dif = dif
 			dif = new_err - total_err
@@ -142,9 +144,7 @@ class ANN():
 		if layer != self.hidden_n+1:
 			#exclude bias in hidden layer
 			transposed_weight = self.transposed_weight[layer-1][1:] #np.array([[i[j] for i in self.weight[layer-1]] for j in range(self.sizes[layer])])
-			dinot = np.dot(transposed_weight,nodes_value)
-			sample = g(dinot)
-			self.hidden[layer-1] = np.concatenate(([1],sample))
+			self.hidden[layer-1] = np.concatenate(([1],g(np.dot(transposed_weight,nodes_value))))
 		else:
 			transposed_weight = self.transposed_weight[layer-1]
 			self.output = g(np.dot(transposed_weight,nodes_value))
