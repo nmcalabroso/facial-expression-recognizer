@@ -71,7 +71,7 @@ class ANN():
 			print "eta:",self.eta
 			print "Epoch:",a+1
 			for row in range(len(data)):#temporary set to 2
-				self.desired = np.array([pi/2 if i is data[row][0] else -(pi/2) for i in range(self.output_n)])
+				self.desired = np.array([1 if i is data[row][0] else -1 for i in range(self.output_n)])
 				self.input = data[row][1]
 				if a == 0:
 					self.input.insert(0,1) #insert bias at index 0
@@ -163,7 +163,7 @@ class ANN():
 		#g = lambda z: 1/(1 + exp(-z))
 		#dg = lambda x: g(x)*(1-g(x))
 
-		dg = lambda x: 1/((x**2)+1)
+		dg = lambda x: 4/((np.power(pi,2))*(np.power(x,2))+4)
 		y = self.desired
 		#5 4 3 2
 
