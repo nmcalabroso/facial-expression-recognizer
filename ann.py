@@ -1,9 +1,9 @@
 from __future__ import division
-from random import random
 from copy import deepcopy
 from math import atan
 from math import fabs
 from math import pi
+import random
 import time
 import numpy as np
 import sys
@@ -26,7 +26,7 @@ class ANN():
 
 	def __init__(self,input_n,output_n,hidden_n,num_nodes,alpha,eta):
 		num_layers = hidden_n+2
-		rand = lambda x: 0.01 if x is 0 else x
+		#rand = lambda x: 0.01 if x is 0 else x
 		self.alpha = alpha #learning rate
 		self.eta = eta #momentum
 		self.hidden_n = hidden_n
@@ -36,7 +36,7 @@ class ANN():
 		self.desired = []
 		self.sizes = [input_n+1 if i is 0 else output_n if i is num_layers-1 else num_nodes+1 for i in range(num_layers)]
 		self.hidden = [np.array([1 for b in range(num_nodes+1)]) for i in range(hidden_n)]
-		self.weight = [[[rand(random()) for k in range(self.sizes[i+1])] for j in range(self.sizes[i])] for i in range(num_layers-1)]
+		self.weight = [[[random.uniform(-0.05,0.05) for k in range(self.sizes[i+1])] for j in range(self.sizes[i])] for i in range(num_layers-1)]
 		self.weight = [np.array(i) for i in self.weight] #make array
 		self.transposed_weight = []
 		self.prev_weight = deepcopy(self.weight)
@@ -67,8 +67,8 @@ class ANN():
 			print "alpha:",self.alpha
 			print "eta:",self.eta
 			print "Epoch:",a+1
-			for row in range(len(data)):#temporary set to 2
-				self.desired = np.array([pi/2 if i is data[row][0] else -(pi/2) for i in range(self.output_n)])
+			for row in range(1):#temporary set to 2
+				self.desired = np.array([1 if i is data[row][0] else -1 for i in range(self.output_n)])
 				self.input = data[row][1]
 				self.input.insert(0,1) #insert bias at index 0
 				self.input = np.array(self.input)	#make array
@@ -125,22 +125,21 @@ class ANN():
 		return [i.tolist() for i in self.weight]
 			
 	def feed_forward(self,layer):
-		#g = lambda z: 1/(1 + exp(-z))
-		g = lambda x: np.arctan(x)
+		#g = lambda z: 1/(1 + np.exp(-z))
+		g = lambda x: (np.arctan(x*(pi/2)))*(2/pi) #sigmoid function
 		#print "Current layer:",layer
-
+		nodes_value = None
 		if layer == 1: #input layer and 1st hidden layer
 			nodes_value = self.input
 		else:
 			nodes_value = self.hidden[layer-2]
 
 		#test
-		
-		if layer != self.hidden_n+1:
+		if layer != self.hidden_n+1:	#from input layer to last hidden layer
 			#exclude bias in hidden layer
 			transposed_weight = self.transposed_weight[layer-1][1:] #np.array([[i[j] for i in self.weight[layer-1]] for j in range(self.sizes[layer])])
-		
 			self.hidden[layer-1] = np.concatenate(([1],g(np.dot(transposed_weight,nodes_value))))
+	
 		else:
 			transposed_weight = self.transposed_weight[layer-1]
 			self.output = g(np.dot(transposed_weight,nodes_value))
@@ -159,7 +158,7 @@ class ANN():
 		#g = lambda z: 1/(1 + exp(-z))
 		#dg = lambda x: g(x)*(1-g(x))
 
-		dg = lambda x: 1/((x**2)+1)
+		dg = lambda x: 4/((pi**2)(x**2)+4)#1/((x**2)+1)
 		y = self.desired
 		#5 4 3 2
 
@@ -213,7 +212,7 @@ class ANN():
 			from_layer = self.hidden[layer-1]
 
 		#test
-		col_vector = np.array(np.matrix(err_layer).T)
+		col_vector = np.array(np.matrix(err_layer).T) #transpose
 		a1 = col_vector*from_layer
 		b1 = self.transposed_weight[layer]
 		current_weight = b1 + self.alpha*self.prev_transposed_weight[layer] + self.eta*a1
