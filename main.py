@@ -20,12 +20,12 @@ def load_train_set(filename):
 			header = row
 			print "header:",header
 		else:
-			if rownum < 2:
-				data = row #(emotion, pixel_list, usage)
-				point = (int(data[0]),map(int,data[1].split()))
-				if data[2] == "Training":
-					#print "Loading training data:",i
-					training_set.append(point)
+			#if rownum < 2:
+			data = row #(emotion, pixel_list, usage)
+			point = (int(data[0]),map(int,data[1].split()))
+			if data[2] == "Training":
+				#print "Loading training data:",i
+				training_set.append(point)
 		rownum += 1
 
 	my_file.close()
