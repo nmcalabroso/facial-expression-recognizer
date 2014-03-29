@@ -41,7 +41,7 @@ class FER():
   		#train; writes the weight on the file; returns true if sucesss, false otherwise; returns time consumed
 		return result,timex
 
-	def test(self,dataset):
+	def test(self,dataset,weights):
 		start = time.clock()
 		correct = 0
 		accuracy = 0.0
@@ -49,7 +49,7 @@ class FER():
 		timex = 0
 
 		for row in dataset[:10]:#temporary set to 10
-			prediction = self.predict(row[1])
+			prediction = self.predict(row[1],weights)
 			if prediction == row[0]:
 				correct+=1
 
@@ -60,6 +60,9 @@ class FER():
 		#returns the accuracy of the algorithm in floating point format; returns true if sucess, false otherwise; returns time consumed
 		return accuracy,result,timex
 
-	def predict(self,image):
+	def predict(self,image,weights):
 		#classify a single image, returns the index of result (see main for the legend index:[0,7])
-		return self.neural.classify(image)
+		self.neural = weights
+		output = self.neural.classify(image)
+		print "output:",output
+		return 1
