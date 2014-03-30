@@ -24,11 +24,11 @@ class ANN():
 	self.err_output = [...]
 	"""
 
-	def __init__(self,input_n,output_n,hidden_n,num_nodes,alpha,eta):
+	def __init__(self,input_n,output_n,hidden_n,num_nodes,learning_rate,momentum):
 		num_layers = hidden_n+2
 		#rand = lambda x: 0.01 if x is 0 else x
-		self.alpha = alpha #learning rate
-		self.eta = eta #momentum
+		self.learning_rate = learning_rate #learning rate
+		self.momentum = momentum #momentum
 		self.hidden_n = hidden_n
 		self.output_n = output_n
 
@@ -62,13 +62,13 @@ class ANN():
 		dif = 10
 		new_dif = 1
 
-		self.alpha = fabs(dif)/len(data)
-		self.eta = fabs(new_dif)/len(data)
+		self.learning_rate = fabs(dif)/len(data)
+		self.momentum = fabs(new_dif)/len(data)
 
 		for a in range(epoch):
 			total_err = 0.0
-			print "alpha:",self.alpha
-			print "eta:",self.eta
+			print "learning_rate:",self.learning_rate
+			print "momentum:",self.momentum
 			print "Epoch:",a+1
 			for row in range(len(data)):#temporary set to 2
 				self.desired = np.array([1 if i is data[row][0] else -1 for i in range(self.output_n)])
@@ -124,8 +124,8 @@ class ANN():
 			new_dif = dif
 			dif = new_err - total_err
 			new_err = total_err
-			self.alpha = fabs(dif)/len(data)
-			self.eta = fabs(new_dif)/len(data)
+			self.learning_rate = fabs(dif)/len(data)
+			self.momentum = fabs(new_dif)/len(data)
 
 		return [i.tolist() for i in self.weight]
 			
@@ -220,7 +220,7 @@ class ANN():
 		col_vector = np.array(np.matrix(err_layer).T) #transpose
 		a1 = col_vector*from_layer
 		b1 = self.transposed_weight[layer]
-		current_weight = b1 + self.alpha*self.prev_transposed_weight[layer] + self.eta*a1
+		current_weight = b1 + self.momentum*self.prev_transposed_weight[layer] + self.learning_rate*a1
 
 		self.prev_weight[layer] = self.weight[layer]
 		self.weight[layer] = np.transpose(current_weight)
