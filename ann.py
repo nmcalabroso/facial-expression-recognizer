@@ -95,6 +95,8 @@ class ANN():
 				#print "hidden[0]:",self.hidden[0]
 				#print "output:",self.output
 				#print "error in output:",self.err_output
+				print 'learning_rate',self.learning_rate
+				print 'momentum',self.momentum
 				print 'before', self.weight[0][0][:10]
 				start = time.clock()
 				print "Feeding forward..."
@@ -245,9 +247,9 @@ class ANN():
 		return self.output
 
 	def write_weights(self,epoch):
-		weight_f = open("weights_"+str(epoch)_".txt","w")
-		weights = self.weights
-		
+		weight_f = open("weights_"+str(epoch)+"_.txt","w")
+		weights = [i.tolist() for i in self.weight]
+	
 		for layer in range(len(weights)):
 			weight_f.write("Layer "+str(layer)+"\n")
   			for e in range(len(weights[layer])):
