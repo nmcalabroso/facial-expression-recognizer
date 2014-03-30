@@ -119,8 +119,9 @@ class ANN():
 				print "One training data took",timex,"sec..."
 				# mean squared error
 			#raw_input("Continue to new training data...")
-		
+			
 			print "\nTotal error:",total_err
+			self.write_weights(a)
 			new_dif = dif
 			dif = new_err - total_err
 			new_err = total_err
@@ -242,4 +243,18 @@ class ANN():
 		for i in range(self.hidden_n+1):
 			self.feed_forward(i+1)
 		return self.output
+
+	def write_weights(self,epoch):
+		weight_f = open("weights_"+str(epoch)_".txt","w")
+		weights = self.weights
+		
+		for layer in range(len(weights)):
+			weight_f.write("Layer "+str(layer)+"\n")
+  			for e in range(len(weights[layer])):
+  				weight_f.write("Node "+str(e)+"\n")
+  				for f in range(len(weights[layer][e])):
+  					weight_f.write(str(weights[layer][e][f]) + " ")
+  				weight_f.write("\n")
+  		
+  		weight_f.close()
 
