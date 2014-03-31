@@ -1,14 +1,14 @@
 from __future__ import division
 import time
-#please import your libraries here
+from fann_analyze_image import classifier
 
 #Facial Expression Recognizer
 class FER():
 	def __init__(self):
-		#use this section to instantiate all the libraries needed
-		pass
-
+		self.classifier = classifier()
+		
 	def predict(self,input):
-		#predict a message
-		#return 1 or 0; 1 for happy; 0 for not]
+		output = self.classifier.analyze(input)
+		if output == True:
+			return 1
 		return 0 #temporary
