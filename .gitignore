@@ -3,5 +3,6 @@
 *.png
 *.txt
 *.data
+*.net
 weights.txt
 resources/
