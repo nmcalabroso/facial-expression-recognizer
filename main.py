@@ -134,6 +134,3 @@ def main():
 			break
 		else:
 			print "Please enter a correct input."
-
-if __name__ == "__main__":
-	main()
