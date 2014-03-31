@@ -8,7 +8,7 @@ class FER():
 		self.classifier = classifier()
 		
 	def predict(self,input):
-		output = self.classifier.analyze(input)
-		if output == True:
+		out = self.classifier.analyze(input)
+		if out == True:
 			return 1
-		return 0 #temporary
+		return 0
