@@ -20,12 +20,13 @@ def load_train_set(filename):
 		else:
 			#if rownum < 2:
 			data = row #(emotion, pixel_list, usage)
-			point = (int(data[0]),map(int,data[1].split()))
-			if data[2] == "Training":
+			splitted = data[1].split()
+			point = (int(data[0]),map(int,splitted))
+			if data[2] == "Training" and int(data[0]) == 3:
 				#print "Loading training data:",i
 				training_set.append(point)
 				num_training += 1
-			else:
+			elif data[2] != "Training" and int(data[0]) == 3:
 				test_set.append(point)
 				num_test += 1
 		rownum += 1
@@ -34,26 +35,13 @@ def load_train_set(filename):
 
 
 	c = open("fann_train.data","w")
-	c.write(str(num_training)+' '+str(48*48)+' '+str(7)) #28k 2304 7
+	c.write(str(num_training)+' '+str(48*48)+' '+str(2)) #28k 2304 7
 	c.write('\n')
 	for i in training_set:
 		for j in i[1]:
 			c.write(str(j)+' ')
 		c.write('\n')
-		if i[0] == 0:
-			c.write('1 0 0 0 0 0 0')
-		elif i[0] == 1:
-			c.write('0 1 0 0 0 0 0')
-		elif i[0] == 2:
-			c.write('0 0 1 0 0 0 0')
-		elif i[0] == 3:
-			c.write('0 0 0 1 0 0 0')
-		elif i[0] == 4:
-			c.write('0 0 0 0 1 0 0')
-		elif i[0] == 5:
-			c.write('0 0 0 0 0 1 0')
-		elif i[0] == 6:
-			c.write('0 0 0 0 0 0 1')
+		c.write('1 0')
 		c.write('\n')
 	c.close()
 
@@ -62,20 +50,20 @@ def load_train_set(filename):
 		for j in i[1]:
 			c.write(str(j)+' ')
 		c.write('\n')
-		if i[0] == 0:
-			c.write('1 0 0 0 0 0 0')
-		elif i[0] == 1:
-			c.write('0 1 0 0 0 0 0')
-		elif i[0] == 2:
-			c.write('0 0 1 0 0 0 0')
-		elif i[0] == 3:
-			c.write('0 0 0 1 0 0 0')
-		elif i[0] == 4:
-			c.write('0 0 0 0 1 0 0')
-		elif i[0] == 5:
-			c.write('0 0 0 0 0 1 0')
-		elif i[0] == 6:
-			c.write('0 0 0 0 0 0 1')
+		# if i[0] == 0:
+		c.write('1 0')
+		# elif i[0] == 1:
+		# 	c.write('0 1 0 0 0 0 0')
+		# elif i[0] == 2:
+		# 	c.write('0 0 1 0 0 0 0')
+		# elif i[0] == 3:
+		# 	c.write('0 0 0 1 0 0 0')
+		# elif i[0] == 4:
+		# 	c.write('0 0 0 0 1 0 0')
+		# elif i[0] == 5:
+		# 	c.write('0 0 0 0 0 1 0')
+		# elif i[0] == 6:
+		# 	c.write('0 0 0 0 0 0 1')
 		c.write('\n')
 	c.close()
 
